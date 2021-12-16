@@ -1,12 +1,16 @@
 # Functional Programming
 
+<img src="http://axisapplications.com/wp-content/uploads/2019/02/functionalprogramming_icon-300x300.png" width="96">
+
 ## Purpose
 
-These snippets were created specifically for [IliaUni](https://iliauni.edu.ge/) programming club [presentation](https://iliauni.edu.ge/en/iliauni/AcademicDepartments/bte/siaxleebi-273/programming-club-of-computing-center-at-iliaunifunctional-programming-in-javascript.page).
+These snippets were created specifically for the [presentation](https://iliauni.edu.ge/en/iliauni/AcademicDepartments/bte/siaxleebi-273/programming-club-of-computing-center-at-iliaunifunctional-programming-in-javascript.page) to the  [programming club](https://iliauni.edu.ge/en/iliauni/AcademicDepartments/bte/siaxleebi-273/series-of-meetings-of-the-programming-club-of-computing-center-at-iliauni.page) at [IliaUni](https://iliauni.edu.ge/).
 
 These snippets do not require any framework, complication, or any dependencies not included.
 
 ## Dependencies
+
+<img src="https://rxjs.dev/generated/images/marketing/home/Rx_Logo-512-512.png" alt="drawing" width="64"/>
 
 To demonstrate how Functional Style is used with Reactive Programming, I initially decided to mock some of the basic behaviours
 of Microsoft's Reactive Extensions library. These mocks are still available in this repo and could be used for demonstration.
