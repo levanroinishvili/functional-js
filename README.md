@@ -39,7 +39,6 @@ Some of the most basic snippets are available in file `1-functional.js`, which c
 6. Function `primes$()` will return a stream of primes
    * Sample usage: `primes$().subscribe(console.log, console.warn, console.log.bind(console, '%cDone', 'color:red'));`
 
-
 ## Examples
 
 For these examples, turn on the `Non-Blocking Test` by clicking the button on the page.
