@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="lambda.png">
     <title>Demo</title>
     <script>
 
@@ -14,20 +15,17 @@
             },
             margin: 20, // Safe margin to stay away from window border
             interval: 1000, // Milliseconds between consequitive repositioning of logo
-        };
+        }
+
         function createLogo(logo_config) {
-            const style = { position: 'fixed', transition: 'left 1s, top 1s' }
+            const style = { position: 'fixed', transition: `left ${logo_config.interval}ms linear, top ${logo_config.interval}ms linear` }
             const logo = document.createElement('img');
             Object.entries(logo_config.attributes).forEach(([atr, value]) => logo.setAttribute(atr, value));
             Object.entries(style).forEach(([stylename, value]) => logo.style[stylename] = value);
             return logo;
         }
 
-        function randomFromRange(min, max) {
-            return Math.floor(min + Math.random() * (max - min + 1))
-        }
-
-        function getSafeFrame(element, w, margin) {
+        function getSafeFrame(element, w = window, margin = LOGO_CONFIG.margin) {
             let [minX, maxX, minY, maxY] = [margin, w.innerWidth - element.offsetWidth - margin, margin, w.innerHeight - element.offsetHeight - margin];
             if ( maxX < minX ) minX = maxX = (w.innerWidth - elem.offsetWidth) / 2;
             if ( maxY < minY ) minY = maxY = (w.innerHeight - elem.offsetHeight) / 2;
@@ -38,50 +36,39 @@
             return 100 * part / total
         }
 
-        function getRandomPosition(element, w, margin) {
-            const frame = getSafeFrame(element, w, margin)
-            const [x, y] = [randomFromRange(frame.minX, frame.maxX), randomFromRange(frame.minY, frame.maxY)];
-            return {
-                x: toPercent(x, w.innerWidth) + '%',
-                y: toPercent(y, w.innerHeight) + '%'
-            }
-        }
-
         /** Set element to a known position */
-        function setPosition(element, {x, y}) {
-            element.style.left = x;
-            element.style.top = y;
+        function setPosition(element, {x, y}, w = window) {
+            if ( typeof x === 'number' ) element.style.left = toPercent(x, w.innerWidth) + '%';
+            if ( typeof y === 'number' ) element.style.top = toPercent(y, w.innerHeight) + '%';
         }
 
-        function elementToRandomPosition(element, w, margin) {
-            setPosition(element, getRandomPosition(element, w, margin))
-        }
-
-        function elementReset(element, margin) {
-            setPosition(element, {x: margin + 'px', y: margin + 'px'});
+        function elementMoveTo(element, pos /* +1=>'top'; -1=>'bottom' */, w = window, margin = LOGO_CONFIG.margin) {
+            const frame = getSafeFrame(element, w, margin)
+            if ( pos > 0 ) setPosition(element, {x: frame.minX, y: frame.minY })
+            else setPosition(element, {x: frame.minX, y: frame.maxY})
         }
 
         function initialize() {
             const logo = createLogo(LOGO_CONFIG)
-            elementReset(logo, LOGO_CONFIG.margin)
+            elementMoveTo(logo, +1);
             document.body.appendChild(logo)
             let timeout;
+            oscilate = (element, dir /* +1=>'top'; -1=>'bottom' */, w, margin, interval) => {
+                elementMoveTo(element, dir, w, margin)
+                timeout = setTimeout(oscilate, interval, /* params */ ...[element, -dir, w, margin, interval])
+            }
             logoStart = () => {
-                elementToRandomPosition(logo, window, LOGO_CONFIG.margin)
-                timeout = setTimeout(logoStart, LOGO_CONFIG.interval)
+                oscilate(logo, -1 /* bottom */, window, LOGO_CONFIG.margin, LOGO_CONFIG.interval)
             };
             logoStop = () => {
                 clearTimeout(timeout);
-                elementReset(logo, LOGO_CONFIG.margin)
+                elementMoveTo(logo, +1, LOGO_CONFIG.margin)
             }
-            console.log(logoStart.name, logoStop.name);
+            console.log(`Perform non-blocking test:\n${' '.repeat(10)}start: %c${logoStart.name}()%c, stop: %c${logoStop.name}()`, 'color:red', '', 'color:red');
         }
 
         window.addEventListener('load', initialize)
-window.addEventListener('load', () => {
-logo = document.querySelector('img')
 
-})
     </script>
 </head>
 <body>
