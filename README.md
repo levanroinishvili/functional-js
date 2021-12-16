@@ -57,7 +57,6 @@ This is trivial, so we may try to quickly set up a routine to do it and observe 
 
 ### Computing Primes Asynchronously, non-blocking
 
-
 ### Get primes in the console
 
 ```javascript
