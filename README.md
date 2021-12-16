@@ -2,6 +2,10 @@
 
 <img src="http://axisapplications.com/wp-content/uploads/2019/02/functionalprogramming_icon-300x300.png" width="96">
 
+There are many excellent tutorials on the internet discussing Functional Programming. Thus, it is perhaps counter counterproductive
+to follow the traditional path discussing this topic. Instead, we will try to focus on aspects of Functional Programming as it is
+used by modern web applications developer.
+
 ## Purpose
 
 These snippets were created specifically for the [presentation](https://iliauni.edu.ge/en/iliauni/AcademicDepartments/bte/siaxleebi-273/programming-club-of-computing-center-at-iliaunifunctional-programming-in-javascript.page) to the  [programming club](https://iliauni.edu.ge/en/iliauni/AcademicDepartments/bte/siaxleebi-273/series-of-meetings-of-the-programming-club-of-computing-center-at-iliauni.page) at [IliaUni](https://iliauni.edu.ge/).
@@ -47,7 +51,12 @@ Some of the most basic snippets are available in file `1-functional.js`, which c
 
 For these examples, turn on the `Non-Blocking Test` by clicking the button on the page.
 
-### Getting primes Synchronous
+### Computing Primes Synchronously
+
+This is trivial, so we may try to quickly set up a routine to do it and observe if the resulting code will be blocking or non-blocking.
+
+### Computing Primes Asynchronously, non-blocking
+
 
 ### Get primes in the console
 
