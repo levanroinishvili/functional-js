@@ -20,13 +20,14 @@
         }
         #screen div {
             display: inline-block;
-            border: 3px solid darkblue;
-            background-color: steelblue;
+            border: 3px solid steelblue;
+            background-color: darkblue;
             color: white;
-            border-radius: 8px;
-            padding: 8px;
+            border-radius: 16px;
+            padding: 8px 24px;
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 16px;
+            font-size: 32px;
+            font-weight: bold;
             cursor: pointer;
         }
         .leave {
@@ -75,8 +76,9 @@
             color: white;
         }
     </style>
+    <script src="scripts/async-primes.js"></script>
+    <script src="scripts/curry.js"></script>
     <script>
-
         (function() {
             const LOGO_CONFIG = {
                 attributes: {
@@ -123,20 +125,20 @@
                 elementMoveTo(logo, +1);
                 document.body.appendChild(logo)
                 let timeout;
-                oscilate = (element, dir /* +1=>'top'; -1=>'bottom' */, w, margin, interval) => {
+                let oscilate = (element, dir /* +1=>'top'; -1=>'bottom' */, w, margin, interval) => {
                     elementMoveTo(element, dir, w, margin)
                     timeout = setTimeout(oscilate, interval, /* params */ ...[element, -dir, w, margin, interval])
                 }
-                logoStart = () => {
+                let logoStart = () => {
                     oscilate(logo, -1 /* bottom */, window, LOGO_CONFIG.margin, LOGO_CONFIG.interval)
                 };
-                logoStop = () => {
+                let logoStop = () => {
                     clearTimeout(timeout);
                     elementMoveTo(logo, +1, LOGO_CONFIG.margin)
                 }
 
                 let testing = false;
-                testToggle = () => {
+                let testToggle = () => {
                     const button = document.getElementById('testbutton');
                     if ( testing ) {
                         logoStop()
@@ -159,6 +161,22 @@
         // -------------------------------------------- Show Message ----------------------------------------
 
         (function () {
+
+            function floatItem(item, float = true) {
+                item.style.position = float ? 'fixed' : 'static';
+            }
+
+            function placeItem(item) {
+                const rect = item.getBoundingClientRect()
+                item.style.left = rect.left + 'px'
+                item.style.top = rect.top + 'px'
+            }
+
+
+            function placeItemIn(item, parent) {
+
+            }
+
             function removeItem(item) {
                 item.addEventListener('animationend', () => {
                     item.parentElement?.removeChild(item);
@@ -180,9 +198,9 @@
                 parent.insertBefore(newChild, firstChild);
 
                 // Remove all children
-                if ( clear ) children.forEach(removeItem);
+                if ( clear ) children.reverse().forEach(removeItem);
             }
-            window.show = show
+            window.show = curry(show)
             window.addEventListener('load', () => console.log('To display a message, use %cshow("Message")%c, or %cshow("Message", false)%c to not clear old messges', 'color:red', '', 'color:red', ''));
         })()
     </script>
@@ -211,7 +229,6 @@
             Object.entries(obj).filter(([key, ]) => ! ignore.includes(key)).forEach(([key, value]) => window[key] = window[key] ?? value)
         }
     </script>
-    <script src="6-async-primes.js"></script>
 </head>
 <body>
     <button id="testbutton" class="btn btn-default">Test</button>
