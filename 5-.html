@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo</title>
+    <script>
+
+        const LOGO_CONFIG = {
+            attributes: {
+                src: 'https://rxjs.dev/generated/images/marketing/home/Rx_Logo-512-512.png',
+                width: '50px',
+            },
+            margin: 20, // Safe margin to stay away from window border
+            interval: 1000, // Milliseconds between consequitive repositioning of logo
+        };
+        function createLogo(logo_config) {
+            const style = { position: 'fixed', transition: 'left 1s, top 1s' }
+            const logo = document.createElement('img');
+            Object.entries(logo_config.attributes).forEach(([atr, value]) => logo.setAttribute(atr, value));
+            Object.entries(style).forEach(([stylename, value]) => logo.style[stylename] = value);
+            return logo;
+        }
+
+        function randomFromRange(min, max) {
+            return Math.floor(min + Math.random() * (max - min + 1))
+        }
+
+        function getSafeFrame(element, w, margin) {
+            let [minX, maxX, minY, maxY] = [margin, w.innerWidth - element.offsetWidth - margin, margin, w.innerHeight - element.offsetHeight - margin];
+            if ( maxX < minX ) minX = maxX = (w.innerWidth - elem.offsetWidth) / 2;
+            if ( maxY < minY ) minY = maxY = (w.innerHeight - elem.offsetHeight) / 2;
+            return { minX, maxX, minY, maxY }
+        }
+
+        function toPercent(part, total) {
+            return 100 * part / total
+        }
+
+        function getRandomPosition(element, w, margin) {
+            const frame = getSafeFrame(element, w, margin)
+            const [x, y] = [randomFromRange(frame.minX, frame.maxX), randomFromRange(frame.minY, frame.maxY)];
+            return {
+                x: toPercent(x, w.innerWidth) + '%',
+                y: toPercent(y, w.innerHeight) + '%'
+            }
+        }
+
+        /** Set element to a known position */
+        function setPosition(element, {x, y}) {
+            element.style.left = x;
+            element.style.top = y;
+        }
+
+        function elementToRandomPosition(element, w, margin) {
+            setPosition(element, getRandomPosition(element, w, margin))
+        }
+
+        function elementReset(element, margin) {
+            setPosition(element, {x: margin + 'px', y: margin + 'px'});
+        }
+
+        function initialize() {
+            const logo = createLogo(LOGO_CONFIG)
+            elementReset(logo, LOGO_CONFIG.margin)
+            document.body.appendChild(logo)
+            let timeout;
+            logoStart = () => {
+                elementToRandomPosition(logo, window, LOGO_CONFIG.margin)
+                timeout = setTimeout(logoStart, LOGO_CONFIG.interval)
+            };
+            logoStop = () => {
+                clearTimeout(timeout);
+                elementReset(logo, LOGO_CONFIG.margin)
+            }
+            console.log(logoStart.name, logoStop.name);
+        }
+
+        window.addEventListener('load', initialize)
+window.addEventListener('load', () => {
+logo = document.querySelector('img')
+
+})
+    </script>
+</head>
+<body>
+</body>
+</html>
