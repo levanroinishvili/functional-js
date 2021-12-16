@@ -4,6 +4,15 @@
 
 These snippets were created specifically for [IliaUni](https://iliauni.edu.ge/) programming club [presentation](https://iliauni.edu.ge/en/iliauni/AcademicDepartments/bte/siaxleebi-273/programming-club-of-computing-center-at-iliaunifunctional-programming-in-javascript.page).
 
+These snippets do not require any framework, complication, or any dependencies not included.
+
+## Dependencies
+
+To demonstrate how Functional Style is used with Reactive Programming, I initially decided to mock some of the basic behaviours
+of Microsoft's Reactive Extensions library. These mocks are still available in this repo and could be used for demonstration.
+However, I later decided to include the actual Reactive Extensions from Microsoft, in case we need more functionality during
+the presentation. Microsoft's library should be automatically loaded in the brower, once the included html file is opened.
+
 ## The Plan
 
 We will briefly look at some of the basic ideas in [Functional Programming](https://en.wikipedia.org/wiki/Functional_programming).
@@ -20,8 +29,6 @@ Some of the most basic snippets are available in file `1-functional.js`, which c
 ### Available functionality
 
 1. [Reactive Extensions for JavaScript](https://github.com/ReactiveX/rxjs) (`RxJs`) from Microsoft should automatically load
-   * Originally I wrote a small mock class to recreate basic behaviour of RxJs, but later decided to include actual code from Microsoft
-   * The mock classes are still included
 2. Function `curry(f)` converts regular functions to [curried functions](https://en.wikipedia.org/wiki/Currying)
 3. Function `show(message: string, clear = true)` puts messages on the page
    * `show()` is a curried function

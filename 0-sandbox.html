@@ -12,6 +12,22 @@
             bottom: 16px;
             right: 16px;
         }
+        #buttonTooltip {
+            position: fixed;
+            transition: opacity 1s;
+            border: 1px solid lightgray;
+            border-radius: 8px;
+            background-color: #f2f2f2;
+            padding: 8px;
+            cursor: default;
+            bottom: 60px;
+            right: 50px;
+            max-width: 140px;
+            display: none;
+        }
+        #buttonTooltip.visible {
+            display: block;
+        }
 
         #screen {
             display: grid;
@@ -89,6 +105,8 @@
                 interval: 1000, // Milliseconds between consequitive repositioning of logo
             }
 
+            const [startText, stopText] = ['Start Test', 'Stop Test']
+
             function createLogo(logo_config) {
                 const style = { position: 'fixed', transition: `left ${logo_config.interval}ms linear, top ${logo_config.interval}ms linear` }
                 const logo = document.createElement('img');
@@ -142,17 +160,19 @@
                     const button = document.getElementById('testbutton');
                     if ( testing ) {
                         logoStop()
-                        button.innerText = 'Start Test'
+                        button.innerText = startText
                         button.classList.remove('active')
                         testing = false
                     } else {
                         logoStart()
-                        button.innerText = 'Stop Test'
+                        button.innerText = stopText
                         button.classList.add('active')
                         testing = true
                     }
                 }
+                testbutton.innerText = startText
                 testbutton.addEventListener('click', testToggle)
+
             }
 
             window.addEventListener('load', initialize)
@@ -204,6 +224,14 @@
             window.addEventListener('load', () => console.log('To display a message, use %cshow("Message")%c, or %cshow("Message", false)%c to not clear old messges', 'color:red', '', 'color:red', ''));
         })()
     </script>
+</head>
+<body>
+    <button id="testbutton" class="btn btn-default"></button>
+    <div id="buttonTooltip">
+        This test allows to see if the code running on this page is
+        <a target="_blank" href="https://nodejs.org/en/docs/guides/blocking-vs-non-blocking/">blocking or non-blocking</a>.
+    </div>
+    <div id="screen"></div>
     <script>
         // Load RxJs
         (function() {
@@ -214,24 +242,46 @@
                 .then(eval)
                 .then(extractRxJs)
                 .then(() => console.log('%cRxJs %cReady', 'color:yellow', ''))
+                .then(initiWithRxJs)
                 .catch(() => console.warn('RxJs could not load'))
+
+            /** Remove source map info */
+            function removeHashComments(text) {
+                return text.replace(/\/\/#[^\r\n]*(\r\n|\n|\r)/g, '')
+            }
+            function extractRxJs() {
+                extract(rxjs, ['ajax'])
+                extract(rxjs.operators)
+                extract(rxjs.ajax)
+            }
+            function extract(obj, ignore = []) {
+                Object.entries(obj).filter(([key, ]) => ! ignore.includes(key)).forEach(([key, value]) => window[key] = window[key] ?? value)
+            }
+
+            const tooltip = document.getElementById('buttonTooltip')
+            function togleTooltip(show) {
+                if ( show ) tooltip.classList.add('visible');
+                else tooltip.classList.remove('visible')
+            }
+
+            function initiWithRxJs() {
+                const testbutton = document.getElementById('testbutton')
+                const mouseEnter = fromEvent(testbutton, 'mouseenter', {passive: true})
+                const mouseLeave = fromEvent(testbutton, 'mouseleave', {passive: true})
+                const mouseMove = fromEvent(testbutton, 'mousemove', {passive: true}).pipe(mapTo(0))
+                const tooltipToggle = mouseMove.pipe(
+                    startWith(0),
+                    switchMapTo(timer(0, 1500).pipe(take(2))),
+                    takeUntil(mouseLeave),
+                    endWith(0),
+                );
+                const tooltipState = mouseEnter.pipe(
+                    switchMapTo(tooltipToggle),
+                    distinctUntilChanged()
+                )
+                tooltipState.subscribe(togleTooltip)
+            }
         })();
-        /** Remove source map info */
-        function removeHashComments(text) {
-            return text.replace(/\/\/#[^\r\n]*(\r\n|\n|\r)/g, '')
-        }
-        function extractRxJs() {
-            extract(rxjs, ['ajax'])
-            extract(rxjs.operators)
-            extract(rxjs.ajax)
-        }
-        function extract(obj, ignore = []) {
-            Object.entries(obj).filter(([key, ]) => ! ignore.includes(key)).forEach(([key, value]) => window[key] = window[key] ?? value)
-        }
     </script>
-</head>
-<body>
-    <button id="testbutton" class="btn btn-default">Test</button>
-    <div id="screen"></div>
 </body>
 </html>
