@@ -11,7 +11,7 @@ function take(maxEmissions) {
                 complete: o.complete
             });
             // if ( emissions >= maxEmissions ) subscription.unsubscribe(); // If this happend synchronously
-            return function taredown() { console.log('taring down source subscription'); subscription.unsubscribe() }
+            return function taredown() { subscription.unsubscribe() }
         })
     }
 }

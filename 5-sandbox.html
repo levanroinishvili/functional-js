@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="lambda.png">
+    <title>Demo</title>
+    <style>
+        #testbutton {
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+        }
+
+        #screen {
+            display: grid;
+            justify-items: end;
+            row-gap: 8px;
+        }
+        #screen div {
+            display: inline-block;
+            border: 3px solid darkblue;
+            background-color: steelblue;
+            color: white;
+            border-radius: 8px;
+            padding: 8px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .leave {
+            animation: leave 500ms ease-in normal forwards;
+        }
+        @keyframes leave {
+            from { transform: translate3d(0, 0, 0); opacity: 1; }
+            to { transform: translate3d(0, 1000px, 0); opacity: 0; }
+        }
+        .enter {
+            animation: enter 500ms ease-out normal forwards;
+        }
+        @keyframes enter {
+            from { transform: translate3d(-500px, 0, 0); opacity: 0; }
+            to { transform: translate3d(0, 0, 0); opacity: 1; }
+        }
+
+        button {
+            display: inline-block;
+            margin-bottom: 0;
+            font-weight: 400;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            -ms-touch-action: manipulation;
+            touch-action: manipulation;
+            cursor: pointer;
+            background-image: none;
+            border: 1px solid transparent;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.42857143;
+            border-radius: 4px;
+            user-select: none;
+            min-width: 90px;
+        }
+        button:focus {
+            color: #333;
+            background-color: #e6e6e6;
+            border-color: #8c8c8c;
+            outline: 5px auto -webkit-focus-ring-color;
+            outline-offset: -2px;
+        }
+        button.active {
+            background-color: steelblue;
+            color: white;
+        }
+    </style>
+    <script>
+
+        (function() {
+            const LOGO_CONFIG = {
+                attributes: {
+                    src: 'https://rxjs.dev/generated/images/marketing/home/Rx_Logo-512-512.png',
+                    width: '50px',
+                },
+                margin: 20, // Safe margin to stay away from window border
+                interval: 1000, // Milliseconds between consequitive repositioning of logo
+            }
+
+            function createLogo(logo_config) {
+                const style = { position: 'fixed', transition: `left ${logo_config.interval}ms linear, top ${logo_config.interval}ms linear` }
+                const logo = document.createElement('img');
+                Object.entries(logo_config.attributes).forEach(([atr, value]) => logo.setAttribute(atr, value));
+                Object.entries(style).forEach(([stylename, value]) => logo.style[stylename] = value);
+                return logo;
+            }
+
+            function getSafeFrame(element, w = window, margin = LOGO_CONFIG.margin) {
+                let [minX, maxX, minY, maxY] = [margin, w.innerWidth - element.offsetWidth - margin, margin, w.innerHeight - element.offsetHeight - margin];
+                if ( maxX < minX ) minX = maxX = (w.innerWidth - elem.offsetWidth) / 2;
+                if ( maxY < minY ) minY = maxY = (w.innerHeight - elem.offsetHeight) / 2;
+                return { minX, maxX, minY, maxY }
+            }
+
+            function toPercent(part, total) {
+                return 100 * part / total
+            }
+
+            /** Set element to a known position */
+            function setPosition(element, {x, y}, w = window) {
+                if ( typeof x === 'number' ) element.style.left = toPercent(x, w.innerWidth) + '%';
+                if ( typeof y === 'number' ) element.style.top = toPercent(y, w.innerHeight) + '%';
+            }
+
+            function elementMoveTo(element, pos /* +1=>'top'; -1=>'bottom' */, w = window, margin = LOGO_CONFIG.margin) {
+                const frame = getSafeFrame(element, w, margin)
+                if ( pos > 0 ) setPosition(element, {x: frame.minX, y: frame.minY })
+                else setPosition(element, {x: frame.minX, y: frame.maxY})
+            }
+
+            function initialize() {
+                const logo = createLogo(LOGO_CONFIG)
+                elementMoveTo(logo, +1);
+                document.body.appendChild(logo)
+                let timeout;
+                oscilate = (element, dir /* +1=>'top'; -1=>'bottom' */, w, margin, interval) => {
+                    elementMoveTo(element, dir, w, margin)
+                    timeout = setTimeout(oscilate, interval, /* params */ ...[element, -dir, w, margin, interval])
+                }
+                logoStart = () => {
+                    oscilate(logo, -1 /* bottom */, window, LOGO_CONFIG.margin, LOGO_CONFIG.interval)
+                };
+                logoStop = () => {
+                    clearTimeout(timeout);
+                    elementMoveTo(logo, +1, LOGO_CONFIG.margin)
+                }
+
+                let testing = false;
+                testToggle = () => {
+                    const button = document.getElementById('testbutton');
+                    if ( testing ) {
+                        logoStop()
+                        button.innerText = 'Start Test'
+                        button.classList.remove('active')
+                        testing = false
+                    } else {
+                        logoStart()
+                        button.innerText = 'Stop Test'
+                        button.classList.add('active')
+                        testing = true
+                    }
+                }
+                testbutton.addEventListener('click', testToggle)
+            }
+
+            window.addEventListener('load', initialize)
+        })();
+
+        // -------------------------------------------- Show Message ----------------------------------------
+
+        (function () {
+            function removeItem(item) {
+                item.addEventListener('animationend', () => {
+                    item.parentElement?.removeChild(item);
+                })
+                item.classList.add('leave');
+            }
+
+            function show(message, clear = true) {
+                const parent = document.getElementById('screen');
+                const children = Array.from(parent.children)
+                const firstChild = children[0] ?? null;
+
+                // Add child
+                const newChild = document.createElement('div');
+                newChild.innerText = message;
+                newChild.addEventListener('animationend', () => newChild.classList.remove('enter'))
+                newChild.addEventListener('click', () => removeItem(newChild))
+                newChild.classList.add('enter');
+                parent.insertBefore(newChild, firstChild);
+
+                // Remove all children
+                if ( clear ) children.forEach(removeItem);
+            }
+            window.show = show
+            window.addEventListener('load', () => console.log('To display a message, use %cshow("Message")%c, or %cshow("Message", false)%c to not clear old messges', 'color:red', '', 'color:red', ''));
+        })()
+    </script>
+    <script>
+        // Load RxJs
+        (function() {
+            const rxjsUrl = 'https://www.unpkg.com/rxjs@7.4.0/dist/bundles/rxjs.umd.js'
+            fetch(rxjsUrl)
+                .then(response => response.text())
+                .then(removeHashComments)
+                .then(eval)
+                .then(extractRxJs)
+                .then(() => console.log('%cRxJs %cReady', 'color:yellow', ''))
+                .catch(() => console.warn('RxJs could not load'))
+        })();
+        /** Remove source map info */
+        function removeHashComments(text) {
+            return text.replace(/\/\/#[^\r\n]*(\r\n|\n|\r)/g, '')
+        }
+        function extractRxJs() {
+            extract(rxjs, ['ajax'])
+            extract(rxjs.operators)
+            extract(rxjs.ajax)
+        }
+        function extract(obj, ignore = []) {
+            Object.entries(obj).filter(([key, ]) => ! ignore.includes(key)).forEach(([key, value]) => window[key] = window[key] ?? value)
+        }
+    </script>
+    <script src="6-async-primes.js"></script>
+</head>
+<body>
+    <button id="testbutton" class="btn btn-default">Test</button>
+    <div id="screen"></div>
+</body>
+</html>
