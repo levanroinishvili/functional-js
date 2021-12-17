@@ -7,27 +7,37 @@
     <link rel="shortcut icon" href="lambda.png">
     <title>Demo</title>
     <style>
-        #testbutton {
+        #buttonbox {
             position: fixed;
             bottom: 16px;
             right: 16px;
+            display: grid;
+            grid-auto-flow: row;
+            row-gap: 16px;
         }
-        #buttonTooltip {
+        .tooltip {
             position: fixed;
             transition: opacity 1s;
             border: 1px solid lightgray;
             border-radius: 8px;
-            background-color: #f2f2f2;
+            background-color: lightblue;
             padding: 8px;
             cursor: default;
-            bottom: 60px;
-            right: 50px;
             max-width: 140px;
             display: none;
         }
-        #buttonTooltip.visible {
+        .tooltip.visible {
             display: block;
         }
+        #buttonTooltip {
+            bottom: 50px;
+            right: 50px;
+        }
+        #stopButtonTooltip {
+            bottom: 100px;
+            right: 50px;
+        }
+
 
         #screen {
             display: grid;
@@ -233,10 +243,24 @@
     </script>
 </head>
 <body>
-    <button id="testbutton" class="btn btn-default"></button>
-    <div id="buttonTooltip">
-        This test allows to see if the code running on this page is
-        <a target="_blank" href="https://nodejs.org/en/docs/guides/blocking-vs-non-blocking/">blocking or non-blocking</a>.
+    <div id="buttonbox">
+
+        <button id="emitstop">Emit Stop</button>
+        <button id="testbutton" class="btn btn-default"></button>
+
+        <div id="buttonTooltip" class="tooltip">
+            This test allows to see if the code running on this page is
+            <a target="_blank" href="https://nodejs.org/en/docs/guides/blocking-vs-non-blocking/">blocking or non-blocking</a>.
+        </div>
+        <div id="stopButtonTooltip" class="tooltip">
+            <p>Emits on an Observable <rem>stop$</rem></p>
+            <p>To test, try</p>
+            <rem>stop$
+                .subscribe(
+                    console.log
+                )</rem>
+            <p>and click this button.</p>
+        </div>
     </div>
     <div id="screen"></div>
     <script>
@@ -266,16 +290,15 @@
             }
 
             const tooltip = document.getElementById('buttonTooltip')
-            function togleTooltip(show) {
-                if ( show ) tooltip.classList.add('visible');
-                else tooltip.classList.remove('visible')
+            function togleTooltip(visibility, tooltip, showTooltipClass) {
+                if ( visibility ) tooltip.classList.add(showTooltipClass);
+                else tooltip.classList.remove(showTooltipClass)
             }
 
-            function initiWithRxJs() {
-                const testbutton = document.getElementById('testbutton')
-                const mouseEnter = fromEvent(testbutton, 'mouseenter', {passive: true})
-                const mouseLeave = fromEvent(testbutton, 'mouseleave', {passive: true})
-                const mouseMove = fromEvent(testbutton, 'mousemove', {passive: true}).pipe(mapTo(0))
+            function addTooltip(item, tooltip, showTooltipClass) {
+                const mouseEnter = fromEvent(item, 'mouseenter', {passive: true})
+                const mouseLeave = fromEvent(item, 'mouseleave', {passive: true})
+                const mouseMove = fromEvent(item, 'mousemove', {passive: true}).pipe(mapTo(0))
                 const tooltipToggle = mouseMove.pipe(
                     startWith(0),
                     switchMapTo(timer(0, 1500).pipe(take(2))),
@@ -286,7 +309,15 @@
                     switchMapTo(tooltipToggle),
                     distinctUntilChanged()
                 )
-                tooltipState.subscribe(togleTooltip)
+                tooltipState.subscribe(visibility => togleTooltip(visibility, tooltip, showTooltipClass))
+            }
+
+            function initiWithRxJs() {
+                addTooltip(document.getElementById('testbutton'), document.getElementById('buttonTooltip'), 'visible')
+                addTooltip(document.getElementById('emitstop'), document.getElementById('stopButtonTooltip'), 'visible')
+
+                window.stop$ = new Subject()
+                document.getElementById('emitstop').addEventListener('click', () => window.stop$.next())
             }
         })();
     </script>

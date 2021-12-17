@@ -73,8 +73,8 @@ primes$().subscribe(
 // Get primes on the page - (Turn on non-blocking test to confirm that script is non-blocking)
 concat(
     of(null).pipe(tap(show('Getting primes')), ignoreElements()),
-    primes$(1e5 /* start from */, 0 /* delay */).pipe(take(10)),
+    primes$(1e5 /* start from */, 0 /* delay */).pipe(takeUntil(stop$)),
     of('No More Primes ;)')
-).subscribe(show(_, false) /* curried function */, console.warn)
+).subscribe(show(_, false) /* curried function */, console.warn, console.log.bind(console, 'Done'))
 
 ```

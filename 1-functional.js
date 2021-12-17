@@ -8,6 +8,38 @@
 // imperative vs declarative
 // composable style
 
+
+// --------------------------------------------------------------------------
+function isPrime(n) {
+    for ( let i = 2; i * i <= n; ++i )
+        if ( n % i === 0 ) return false;
+    return 1 < n;
+}
+function showPrimes(min = 1, max = 2e6) {
+    for ( let n = min; n <= max; ++n ) {
+        if ( isPrime(n) ) console.log(n)
+    }
+}
+// --------------------------------------------------------------------------
+
+// Functions are fist-class citizens
+// Assignment of functions
+const zero = () => 0;
+const one = zero;
+// Passing functions as arguments
+function demo(f) {
+    for ( let i = 0; i < 10; ++i)
+        console.log(f.name, ':  ', i, ' => ', f(i))
+}
+
+// Closure
+function memorize(n) {
+    return function recall() {
+        console.log('I memorized', n);
+    }
+}
+
+
 // Pure, stateless
 
 /** This is an example of a stateful function */
