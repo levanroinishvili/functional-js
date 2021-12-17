@@ -101,6 +101,7 @@
                 attributes: {
                     src: 'https://rxjs.dev/generated/images/marketing/home/Rx_Logo-512-512.png',
                     width: '50px',
+                    id: 'logo',
                 },
                 margin: 20, // Safe margin to stay away from window border
                 interval: 1000, // Milliseconds between consequitive repositioning of logo
@@ -222,6 +223,12 @@
                 if ( clear ) children.reverse().forEach(removeItem);
             }
             window.show = curry(show)
+            window.clearShow = () => Array.from(document.getElementById('screen').children).forEach(removeItem)
+            window.addEventListener('load', () => {
+                console.log('logo', document.getElementById('logo'))
+                document.getElementById('logo').addEventListener('click', window.clearShow)
+            })
+
             window.addEventListener('load', () => console.log('To display a message, use %cshow("Message")%c, or %cshow("Message", false)%c to not clear old messges', 'color:red', '', 'color:red', ''));
         })()
     </script>
