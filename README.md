@@ -2,6 +2,10 @@
 
 <img src="http://axisapplications.com/wp-content/uploads/2019/02/functionalprogramming_icon-300x300.png" width="96">
 
+### To Follow
+
+Open [this page](https://levanroinishvili.github.io/functional-js/index.html)
+
 There are many excellent tutorials on the internet discussing Functional Programming. Thus, it is perhaps counter counterproductive
 to follow the traditional path discussing this topic. Instead, we will try to focus on aspects of Functional Programming as it is
 used by modern web applications developer.
@@ -19,7 +23,7 @@ These snippets do not require any framework, complication, or any dependencies n
 To demonstrate how Functional Style is used with Reactive Programming, I initially decided to mock some of the basic behaviours
 of Microsoft's Reactive Extensions library. These mocks are still available in this repo and could be used for demonstration.
 However, I later decided to include the actual Reactive Extensions from Microsoft, in case we need more functionality during
-the presentation. Microsoft's library should be automatically loaded in the brower, once the included html file is opened.
+the presentation. Microsoft's library should be automatically loaded in the brower, once the included [html file](https://levanroinishvili.github.io/functional-js/index.html) is opened.
 
 ## The Plan
 
@@ -31,7 +35,7 @@ Then we will try to see Functional Programming in action. Perhaps with Promises 
 
 The snippets were written to be executable within the browser console.
 
-Open the `0-sandbox.html` file in the browser and open the console.
+Open the [index.html](https://levanroinishvili.github.io/functional-js/index.html) file in the browser and open the console.
 Some of the most basic snippets are available in file `1-functional.js`, which can be copy/pasted into the browser console.
 
 ### Available functionality
