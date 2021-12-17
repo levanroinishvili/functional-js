@@ -225,7 +225,6 @@
             window.show = curry(show)
             window.clearShow = () => Array.from(document.getElementById('screen').children).forEach(removeItem)
             window.addEventListener('load', () => {
-                console.log('logo', document.getElementById('logo'))
                 document.getElementById('logo').addEventListener('click', window.clearShow)
             })
 
