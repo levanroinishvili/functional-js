@@ -8,6 +8,14 @@
 // imperative vs declarative
 // composable style
 
+// FYI: I will use two notations for functions in JavaScript
+
+// λ-calculus
+// Functions are unary (arity of 1) | Practical usage: Curried functions. example ideas: ages
+// Closure
+
+// I, M, I(I), M(M) - halting problem
+
 
 // --------------------------------------------------------------------------
 function isPrime(n) {
@@ -15,30 +23,111 @@ function isPrime(n) {
         if ( n % i === 0 ) return false;
     return 1 < n;
 }
-function showPrimes(min = 1, max = 2e6) {
+/** Not a pure function */
+function countPrimes(min = 1, max = 7e6) {
+    let count = 0;
     for ( let n = min; n <= max; ++n ) {
-        if ( isPrime(n) ) console.log(n)
+        count += isPrime(n)
+    }
+    return count
+}
+
+countPrimes(1, 100)
+
+// More functional
+function counter(from, to, f) {
+    let count = 0
+    for (let i = from; i <= to; ++i) {
+        count += f(i)
+    }
+    return count
+}
+
+counter(1, 100, isPrime)
+
+function makeCounterFrom(f) {
+    return function(min, max) {
+        let count = 0;
+        for ( let i = min; i <= max; ++i )
+            count += f(i)
+        return count
     }
 }
+
+const countPrimes = makeCounterFrom(isPrime)
 // --------------------------------------------------------------------------
 
 // Functions are fist-class citizens
 // Assignment of functions
-const zero = () => 0;
-const one = zero;
+const Kzero = () => 0;
+const Kx = zero;
 // Passing functions as arguments
 function demo(f) {
     for ( let i = 0; i < 10; ++i)
         console.log(f.name, ':  ', i, ' => ', f(i))
 }
 
-// Closure
-function memorize(n) {
-    return function recall() {
-        console.log('I memorized', n);
+
+function memorize(f, keymaker = JSON.stringify) {
+    const cache = {}
+
+    return function(...args) {
+        const key = keymaker.call(null, args)
+        return key in cache ? cache[key] : cache[key] = f(...args)
     }
 }
 
+function memorize(f, keymaker = JSON.stringify) {
+    const cache = {}
+
+    return function(...args) {
+        const key = keymaker.call(null, args)
+        if ( key in cache ) {
+            console.log('%cCache hit for', 'color:green', key)
+            return cache[key]
+        } else {
+            console.log('%cCache missed for', 'color:red', key)
+            return cache[key] = f(...args)
+        }
+    }
+}
+
+function memorizedCurried(f, curry = curry, keymaker = JSON.stringify) {
+    const cache = {}
+    const curried = curry(f)
+    function maker(prevArgs, f) {
+        return function (nextArg) {
+            const args = [...prevArgs, nextArg]
+            const key = keymaker.apply(null, args)
+            if ( key in cache ) {
+                console.log('%cCache hit for', 'color:green', key)
+                return cache[key]
+            } else {
+                const result = f(...args)
+                if ( typeof result === 'function' ) return maker(args, result)
+                else {
+                    console.log('%cCache missed for', 'color:red', key)
+                    return cache[key] = result
+                }
+            }
+        }
+    }
+    return maker([], curried)
+}
+
+mockingbird = f => (...args) => f(f, ...args)
+
+function f(k) {
+    return function (x) {
+        const sum = k + x
+        return sum
+    }
+}
+
+const g = f(17)  // returns a function
+
+g(1) // returns 18
+g(10) // returns 28
 
 // Pure, stateless
 
@@ -71,6 +160,27 @@ function additionTester(add, testCount = 10) {
         console.log(icon, testPrompt, testReply);
         if ( sumTest !== sumReal ) break;
     }
+}
+
+const AdditionTests = [
+    {params: [1,2], result: 3},
+    {params: [7,2], result: 9},
+    {params: [9,3], result: 12},
+    {params: [7,8], result: 15},
+    {params: [10,12], result: 22},
+    {params: [0,102], result: 102},
+]
+function tester(f, tests) {
+    return tests.every(({params, result}) => {
+        const realResult = f(...params)
+        if ( realResult === result ) {
+            console.log(`✅ ${f.name}(${params.join(', ')}) = ${result}`)
+            return true
+        } else {
+            console.log(`⛔ ${f.name}(${params.join(', ')}) should be ${result} %c(Function returned ${realResult})`, 'color:yellow')
+            return false
+        }
+    })
 }
 
 /** This function makes another function "polite" */

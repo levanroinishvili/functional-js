@@ -1,9 +1,12 @@
 
 /** get primes from remote API */
-function primesAsync(upto = 1e6) {
+function primesAsync(upto = 1e6, delay = 3000) {
     const primesApiUrl = `https://sethriedel.com/primes/api/primes.php?limit=${upto}`
     const corsProxyUrl = 'https://api.codetabs.com/v1/proxy/?quest=' + primesApiUrl;
-    return fetch(corsProxyUrl).then(response => response.json()).then(reply => reply.primes)
+    return fetch(corsProxyUrl)
+        .then(response => response.json())
+        .then(reply => reply.primes)
+        .then(primes => new Promise(resolve => setTimeout(resolve, delay, primes)))
 }
 
 /**
